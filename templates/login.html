@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card p-4">
+      <h3 class="mb-4">Login</h3>
+
+      <form method="POST">
+        <input class="form-control mb-3" name="user_input" placeholder="Email sau Username" required>
+        <input class="form-control mb-3" name="password" type="password" placeholder="Parola" required>
+        <button class="btn btn-success w-100">Autentificare</button>
+      </form>
+
+      <hr>
+      <p class="text-center">Nu ai cont? <a href="/register">Înregistrează-te</a></p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="text-center mt-5">
+    <h1>Bine ai venit, {{ current_user.username }}!</h1>
+    <p class="lead mt-3">Esti logat cu succes in Smart Planner.</p>
+
+    <a href="/logout" class="btn btn-danger btn-lgout">Logout</a>
+</div>
+
+<style>
+.btn-lgout{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+}
+</style>
+
+{% endblock %}

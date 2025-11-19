@@ -21,10 +21,13 @@ def create_app():
     from routes.login_register import auth
     from routes.logout import logout_bp
     from routes.home import home_bp
+    from routes.task import tasks_bp   
+
 
     app.register_blueprint(auth)
     app.register_blueprint(logout_bp)
     app.register_blueprint(home_bp)
+    app.register_blueprint(tasks_bp)   
 
     return app
 

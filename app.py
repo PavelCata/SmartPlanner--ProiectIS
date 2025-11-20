@@ -4,7 +4,6 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin
 from config import Config
 
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
@@ -25,17 +24,13 @@ def create_app():
     from routes.task import tasks_bp
     from routes.friends import friends_bp
    
-
-
     app.register_blueprint(auth)
     app.register_blueprint(logout_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(tasks_bp)
     app.register_blueprint(friends_bp)
    
-
     return app
-
 
 @login_manager.user_loader
 def load_user(user_id):

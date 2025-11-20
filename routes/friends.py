@@ -5,7 +5,6 @@ from app import db
 
 friends_bp = Blueprint("friends", __name__, url_prefix="/friends")
 
-# vezi lista de prieteni
 @friends_bp.route("/")
 @login_required
 def list_friends():
@@ -26,7 +25,6 @@ def list_friends():
         users=users
     )
 
-# trimite cerere
 @friends_bp.route("/add/<int:user_id>")
 @login_required
 def send_request(user_id):
@@ -51,7 +49,6 @@ def send_request(user_id):
     return redirect(url_for("friends.list_friends"))
 
 
-# acceptă cererea
 @friends_bp.route("/accept/<int:req_id>")
 @login_required
 def accept(req_id):
@@ -63,7 +60,6 @@ def accept(req_id):
     return redirect(url_for("friends.list_friends"))
 
 
-# respinge cererea
 @friends_bp.route("/reject/<int:req_id>")
 @login_required
 def reject(req_id):
@@ -75,7 +71,6 @@ def reject(req_id):
     return redirect(url_for("friends.list_friends"))
 
 
-# sterge un prieten
 @friends_bp.route("/remove/<int:friend_id>")
 @login_required
 def remove(friend_id):

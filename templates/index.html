@@ -5,6 +5,12 @@
 <div class="mt-4">
   <h1 class="text-center">Bine ai venit, {{ current_user.username }}!</h1>
 </div>
+<div class="d-flex justify-content-end mt-2">
+  <a href="{{ url_for('friends.list_friends') }}" 
+     class="btn btn-primary btn-sm">
+     Lista de prieteni
+  </a>
+</div>
 
 <div class="row justify-content-center mt-4">
   <div class="col-lg-8">
@@ -91,15 +97,15 @@
               <input type="time" class="form-control" name="end" id="endTime" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Importanță</label>
+              <label class="form-label">Importanta</label>
               <select name="importance" class="form-control" required>
                 <option value="high">Mare</option>
                 <option value="medium">Medie</option>
-                <option value="low">Mică</option>
+                <option value="low">Mica</option>
               </select>
             </div>
             <div class="col-md-4" id="low-options" style="display:none;">
-              <label class="form-label">Mod pentru importanță mică</label>
+              <label class="form-label">Mod pentru importanta mica</label>
               <select name="low_mode" class="form-control">
                 <option value="slot">Aleg eu intervalul</option>
                 <option value="random">Random</option>
@@ -197,4 +203,7 @@ document.getElementById("taskTitle").addEventListener("input", function () {
 });
 </script>
 
+
+
 {% endblock %}
+

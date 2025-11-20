@@ -119,5 +119,26 @@
     right:20px;
 }
 </style>
+{% if request.endpoint == "home.index" %}
+  {% if next_task %}
+  <div class = "alert alert-warning mb-3 text-center flash-msg">
+    Grabeste-te, task-ul "{{ next_task.title }}" expira la {{ next_task.end_time.strftime('%H:%M') }}!
+  </div>
+  {% else %}
+  <div class = "alert alert-success mb-3 text-center flash-msg">
+    Nu mai ai taskuri pentru azi!
+  </div>
+  {% endif %}
+{% endif %}
+
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.flash-msg').forEach(el => {
+        el.style.transition = "opacity 0.5s";
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 500); 
+    });
+}, 3000); 
+</script>
 
 {% endblock %}

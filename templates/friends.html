@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Prietenii tai{% endblock %}
+{% block content %}
+
+<h2 class="text-center mt-4">Prietenii tai</h2>
+
+<div class="container mt-4">
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="mb-3">Lista de prieteni</h4>
+
+      {% if friends and friends|length > 0 %}
+        <ul class="list-group">
+          {% for f in friends %}
+          {% set friend = f.sender if f.sender_id != current_user.id else f.receiver %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ friend.username }}
+            <a href="{{ url_for('friends.remove', friend_id=f.id) }}" class="btn btn-outline-danger btn-sm">
+              Șterge
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">Nu ai inca prieteni adaugati.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="mb-3">Cererile tale primite</h4>
+
+      {% if received_requests and received_requests|length > 0 %}
+        <ul class="list-group">
+          {% for req in received_requests %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ req.sender.username }}
+
+            <div>
+              <a href="{{ url_for('friends.accept', req_id=req.id) }}" class="btn btn-success btn-sm">
+                Accepta
+              </a>
+              <a href="{{ url_for('friends.reject', req_id=req.id) }}" class="btn btn-danger btn-sm">
+                Respinge
+              </a>
+            </div>
+
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">Nu ai cereri în asteptare.</p>
+      {% endif %}
+    </div>
+  </div>
+
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h4 class="mb-3">Adauga prieteni</h4>
+
+      {% if users and users|length > 0 %}
+        <ul class="list-group">
+          {% for u in users %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ u.username }}
+
+            <a href="{{ url_for('friends.send_request', user_id=u.id) }}" class="btn btn-primary btn-sm">
+              Trimite cerere
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">Toti utilizatorii sunt deja prietenii tai.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

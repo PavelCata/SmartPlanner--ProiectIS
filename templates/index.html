@@ -90,6 +90,28 @@
               <label class="form-label">Ora de final</label>
               <input type="time" class="form-control" name="end" required>
             </div>
+            <div class="col-md-4">
+              <label class="form-label">Importanță</label>
+              <select name="importance" class="form-control" required>
+                <option value="high">Mare</option>
+                <option value="medium">Medie</option>
+                <option value="low">Mică</option>
+              </select>
+            </div>
+            <div class="col-md-4" id="low-options" style="display:none;">
+              <label class="form-label">Mod pentru importanță mică</label>
+              <select name="low_mode" class="form-control">
+                <option value="slot">Aleg eu intervalul</option>
+                <option value="random">Random</option>
+              </select>
+            </div>
+            <script>
+            document.querySelector('select[name="importance"]').addEventListener('change', function () {
+                let lowOptions = document.getElementById("low-options");
+                lowOptions.style.display = this.value === "low" ? "block" : "none";
+            });
+            </script>
+
             <div class="col-md-6">
               <label class="form-label">Titlu</label>
               <input type="text" class="form-control" name="title" required>

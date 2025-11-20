@@ -84,11 +84,11 @@
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Ora de start</label>
-              <input type="time" class="form-control" name="start" required>
+              <input type="time" class="form-control" name="start" id="startTime" required>
             </div>
             <div class="col-md-3">
               <label class="form-label">Ora de final</label>
-              <input type="time" class="form-control" name="end" required>
+              <input type="time" class="form-control" name="end" id="endTime" required>
             </div>
             <div class="col-md-4">
               <label class="form-label">Importanță</label>
@@ -114,7 +114,7 @@
 
             <div class="col-md-6">
               <label class="form-label">Titlu</label>
-              <input type="text" class="form-control" name="title" required>
+              <input type="text" class="form-control" name="title" id="taskTitle" required>
             </div>
           </div>
 
@@ -161,6 +161,40 @@ setTimeout(() => {
         setTimeout(() => el.remove(), 500); 
     });
 }, 3000); 
+</script>
+
+<script>
+const smartRules = [
+    { keywords: ["sala", "gym", "antrenament"], duration: 90, importance: "medium", low_mode: "slot" },
+    { keywords: ["facultate", "tema", "proiect"], duration: 120, importance: "high", low_mode: "slot" },
+    { keywords: ["citit"], duration: 45, importance: "low", low_mode: "slot" },
+    { keywords: ["invata", "învățat", "examen"], duration: 120, importance: "high", low_mode: "slot" },
+    { keywords: ["curatenie", "curățenie"], duration: 60, importance: "low", low_mode: "random" }
+];
+
+function addMinutes(timeStr, mins) {
+    let [h, m] = timeStr.split(":").map(Number);
+    let total = h * 60 + m + mins;
+    return String(Math.floor(total / 60)).padStart(2, "0") + ":" +
+           String(total % 60).padStart(2, "0");
+}
+
+document.getElementById("taskTitle").addEventListener("input", function () {
+    let text = this.value.toLowerCase();
+    for (let rule of smartRules) {
+        if (rule.keywords.some(k => text.includes(k))) {
+            let startInput = document.getElementById("startTime");
+            let endInput = document.getElementById("endTime");
+            if (startInput.value) {
+                endInput.value = addMinutes(startInput.value, rule.duration);
+            }
+            document.querySelector('select[name="importance"]').value = rule.importance;
+            let lowModeSelect = document.querySelector('select[name="low_mode"]');
+            if (lowModeSelect) lowModeSelect.value = rule.low_mode;
+            break;
+        }
+    }
+});
 </script>
 
 {% endblock %}

@@ -38,7 +38,7 @@ def send_request(user_id):
     ).first()
 
     if existing:
-        flash("Există deja o conexiune sau cerere!", "info")
+        flash("Exista deja o cerere!", "info")
         return redirect(url_for("friends.list_friends"))
 
     req = Friendship(sender_id=current_user.id, receiver_id=user_id)

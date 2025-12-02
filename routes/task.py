@@ -1,9 +1,9 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime, date, time, timedelta
-
 from app import db
 from models import Task
+from routes.notifications import add_notification
 
 tasks_bp = Blueprint("tasks", __name__)
 

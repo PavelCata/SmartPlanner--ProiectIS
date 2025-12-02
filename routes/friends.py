@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
 from models import User, Friendship
 from app import db
+from routes.notifications import add_notification
 
 friends_bp = Blueprint("friends", __name__, url_prefix="/friends")
 
@@ -45,6 +46,8 @@ def send_request(user_id):
     db.session.add(req)
     db.session.commit()
 
+    add_notification(user_id, f"{current_user.username} ti-a trimis o cerere de prietenie!","info")
+    
     flash("Cerere trimisa!", "success")
     return redirect(url_for("friends.list_friends"))
 
@@ -57,6 +60,9 @@ def accept(req_id):
         req.status = "accepted"
         db.session.commit()
         flash("Cerere acceptata!", "success")
+
+    add_notification(req.sender_id, f"{current_user.username} ti-a acceptat cererea de prietenie!","success")
+    
     return redirect(url_for("friends.list_friends"))
 
 

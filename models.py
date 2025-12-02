@@ -40,3 +40,14 @@ class Friendship(db.Model):
 
     sender = db.relationship("User", foreign_keys=[sender_id])
     receiver = db.relationship("User", foreign_keys=[receiver_id])
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    text = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(20), default="info")
+    seen = db.Column(db.Boolean, default=False)
+    
+User.notifications = db.relationship("Notification", backref="user", lazy=True, cascade="all,delete")
+
+

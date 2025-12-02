@@ -163,8 +163,8 @@ const smartRules = [
     { keywords: ["sala", "gym", "antrenament"], duration: 90, importance: "medium", low_mode: "slot" },
     { keywords: ["facultate", "tema", "proiect"], duration: 120, importance: "high", low_mode: "slot" },
     { keywords: ["citit"], duration: 45, importance: "low", low_mode: "slot" },
-    { keywords: ["invata", "învățat", "examen"], duration: 120, importance: "high", low_mode: "slot" },
-    { keywords: ["curatenie", "curățenie"], duration: 60, importance: "low", low_mode: "random" }
+    { keywords: ["invata", "invatat", "examen"], duration: 120, importance: "high", low_mode: "slot" },
+    { keywords: ["curatenie", "curat"], duration: 60, importance: "low", low_mode: "random" }
 ];
 
 function addMinutes(timeStr, mins) {
@@ -192,7 +192,4 @@ document.getElementById("taskTitle").addEventListener("input", function () {
 });
 </script>
 
-
-
 {% endblock %}
-

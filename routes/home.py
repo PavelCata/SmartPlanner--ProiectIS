@@ -31,7 +31,4 @@ def index():
         tasks=tasks_today,
     )
 
-
-
-
- 
+    return render_template("index.html", tasks_today=tasks_today,overdue_tasks=overdue_t, next_task=next_task, selected_date=today, tasks = tasks_today)

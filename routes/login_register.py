@@ -49,7 +49,6 @@ def register():
         return redirect(url_for("auth.login"))
     return render_template("register.html")
 
-
 @auth.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:

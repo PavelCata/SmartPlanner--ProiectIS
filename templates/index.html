@@ -11,10 +11,8 @@
      Lista de prieteni
   </a>
 </div>
-
 <div class="row justify-content-center mt-4">
   <div class="col-lg-8">
-
     <div class="card mb-4">
       <div class="card-body">
         <form class="row g-3 align-items-end" method="get" action="{{ url_for('tasks.view_tasks') }}">
@@ -33,7 +31,6 @@
         </form>
       </div>
     </div>
-
     <div class="card mb-4">
       <div class="card-body">
         <h4 class="mb-3">
@@ -44,7 +41,6 @@
             (alege o data)
           {% endif %}
         </h4>
-
         {% if tasks and tasks|length > 0 %}
           <div class="table-responsive">
             <table class="table table-sm align-middle">
@@ -79,14 +75,30 @@
         {% endif %}
       </div>
     </div>
-
+    {% if top_tasks and top_tasks|length > 0 %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="mb-3">Sugerate</h5>
+        <div class="d-flex gap-2 flex-wrap">
+          {% for t in top_tasks %}
+          <button type="button"
+                  class="btn btn-outline-primary shortcut"
+                  data-title="{{ t.title }}"
+                  data-duration="{{ t.avg_duration|round(0) }}"
+                  data-importance="medium">
+            ⭐ {{ t.title }}
+          </button>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
     <div class="card">
       <div class="card-body">
         <h4 class="mb-3">Adauga un task nou</h4>
         <form method="post" action="{{ url_for('tasks.view_tasks') }}">
           <input type="hidden" name="date"
                  value="{{ selected_date.isoformat() if selected_date else '' }}">
-
           <div class="row g-3">
             <div class="col-md-3">
               <label class="form-label">Ora de start</label>
@@ -117,22 +129,17 @@
                 lowOptions.style.display = this.value === "low" ? "block" : "none";
             });
             </script>
-
             <div class="col-md-6">
               <label class="form-label">Titlu</label>
               <input type="text" class="form-control" name="title" id="taskTitle" required>
             </div>
           </div>
-
           <div class="mt-3 text-end">
             <button type="submit" class="btn btn-success">Salveaza task</button>
           </div>
-        </form>
-
-        
+        </form>        
       </div>
     </div>
-
   </div>
 </div>
 
@@ -147,6 +154,49 @@
     right:20px;
 }
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const shortcuts = document.querySelectorAll(".shortcut");
+    const titleInput = document.getElementById("taskTitle");
+    const startInput = document.getElementById("startTime");
+    const endInput = document.getElementById("endTime");
+    const importanceSelect = document.querySelector("select[name='importance']");
+    shortcuts.forEach(btn => {
+        btn.addEventListener("click", () => {
+            let title = btn.dataset.title;
+            let duration = parseInt(btn.dataset.duration);
+            let importance = btn.dataset.importance || "medium";
+            titleInput.value = title;
+            importanceSelect.value = importance;
+            importanceSelect.dispatchEvent(new Event("change"));
+            if (startInput.value) {
+                let [h, m] = startInput.value.split(":").map(Number);
+                let total = h * 60 + m + duration;
+                let endH = Math.floor(total / 60);
+                let endM = total % 60;
+                endInput.value = 
+                    String(endH).padStart(2, '0') + ":" +
+                    String(endM).padStart(2, '0');
+            }
+            btn.classList.add("btn-success");
+            setTimeout(() => btn.classList.remove("btn-success"), 800);
+        });
+    });
+    startInput.addEventListener("input", () => {
+        let shortcut = document.querySelector(".shortcut.btn-success");
+        if (!shortcut) return;
+        let duration = parseInt(shortcut.dataset.duration);
+        let [h, m] = startInput.value.split(":").map(Number);
+        let total = h * 60 + m + duration;
+        let endH = Math.floor(total / 60);
+        let endM = total % 60;
+        endInput.value =
+            String(endH).padStart(2, '0') + ":" +
+            String(endM).padStart(2, '0');
+    });
+});
+</script>
 
 <script>
 setTimeout(() => {
@@ -191,5 +241,4 @@ document.getElementById("taskTitle").addEventListener("input", function () {
     }
 });
 </script>
-
 {% endblock %}

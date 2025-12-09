@@ -65,7 +65,7 @@ def move_task_to_next_day(task):
             db.session.commit()
             flash(
                 f"Taskul '{task.title}' a fost mutat din {original_date} "
-                f"({original_start}-{original_end}) în {task.date} "
+                f"({original_start}-{original_end}) in {task.date} "
                 f"({task.start_time.strftime('%H:%M')}-{task.end_time.strftime('%H:%M')}) "
                 f"pentru a-i gasi un loc liber.",
                 "warning"

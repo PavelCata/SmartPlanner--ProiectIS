@@ -158,14 +158,38 @@ setTimeout(() => {
         setTimeout(() => el.remove(), 500); 
     });
 }, 3000); 
+
 </script>
 
-<script> 
-document.getElementById("clearNotifications")?.addEventListener("click", () => {
-    document.querySelectorAll(".dropdown-menu .alert").forEach(el => el.remove());
-    document.querySelectorAll(".badge").forEach(b => b.remove());
+<script>
+document.querySelectorAll(".template-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+
+        const title = btn.dataset.title;
+        const duration = parseInt(btn.dataset.duration);
+        const importance = btn.dataset.importance;
+
+        document.getElementById("taskTitle").value = title;
+
+        document.querySelector('select[name="importance"]').value = importance;
+
+        const lowOpts = document.getElementById("low-options");
+        lowOpts.style.display = importance === "low" ? "block" : "none";
+
+        const startInput = document.getElementById("startTime");
+        const endInput = document.getElementById("endTime");
+
+        if (startInput.value) {
+            const [h, m] = startInput.value.split(":").map(Number);
+            const total = h * 60 + m + duration;
+            const endH = String(Math.floor(total / 60)).padStart(2, "0");
+            const endM = String(total % 60).padStart(2, "0");
+            endInput.value = `${endH}:${endM}`;
+        } else {
+            endInput.value = "";
+            startInput.focus();
+        }
+
+    });
 });
 </script>
-
-</body>
-</html>

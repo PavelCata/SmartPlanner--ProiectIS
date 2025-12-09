@@ -241,4 +241,31 @@ document.getElementById("taskTitle").addEventListener("input", function () {
     }
 });
 </script>
+
+<h5 class="mb-2">Utilizate frecvent</h5>
+<div class="d-flex flex-wrap gap-2 mb-3">
+
+  <button type="button" class="btn btn-outline-primary template-btn"
+          data-title="Facultate"
+          data-duration="120"
+          data-importance="high">
+    Facultate (2h)
+  </button>
+
+  <button type="button" class="btn btn-outline-success template-btn"
+          data-title="Antrenament"
+          data-duration="90"
+          data-importance="medium">
+    Antrenament (1h 30m)
+  </button>
+
+  <button type="button" class="btn btn-outline-info template-btn"
+          data-title="Curatenie"
+          data-duration="45"
+          data-importance="low">
+    Curatenie (45m)
+  </button>
+
+</div>
+
 {% endblock %}

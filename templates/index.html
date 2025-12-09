@@ -78,7 +78,7 @@
     {% if top_tasks and top_tasks|length > 0 %}
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="mb-3">Sugerate</h5>
+        <h5 class="mb-3">Task-uri frecvente</h5>
         <div class="d-flex gap-2 flex-wrap">
           {% for t in top_tasks %}
           <button type="button"
@@ -242,7 +242,7 @@ document.getElementById("taskTitle").addEventListener("input", function () {
 });
 </script>
 
-<h5 class="mb-2">Utilizate frecvent</h5>
+<h5 class="mb-2">Sugestii</h5>
 <div class="d-flex flex-wrap gap-2 mb-3">
 
   <button type="button" class="btn btn-outline-primary template-btn"

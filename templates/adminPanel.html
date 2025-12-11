@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 text-center">Panou de Control Admin</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actiuni</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+                <a href="{{ url_for('admin_panel.ban_user', user_id=u.id) }}"
+                   class="btn btn-danger btn-sm">Ban</a>
+
+                {% if u.restricted %}
+                <a href="{{ url_for('admin_panel.unrestrict_user', user_id=u.id) }}"
+                   class="btn btn-success btn-sm">Unrestrict</a>
+                {% else %}
+                <a href="{{ url_for('admin_panel.restrict_user', user_id=u.id) }}"
+                   class="btn btn-warning btn-sm">Restrict</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

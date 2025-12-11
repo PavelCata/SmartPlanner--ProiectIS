@@ -51,6 +51,7 @@ def register():
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
+    
     if current_user.is_authenticated:
         return redirect(url_for("home.index"))
 
@@ -64,6 +65,10 @@ def login():
 
         if not user:
             flash("Username sau email inexistent!", "danger")
+            return redirect(url_for("auth.login"))
+        
+        if user.restricted:
+            flash("Contul tau este restrictionat! Contacteaza un admin.", "danger")
             return redirect(url_for("auth.login"))
 
         if not bcrypt.check_password_hash(user.password_hash, password):

@@ -25,6 +25,7 @@ def create_app():
     from routes.task import tasks_bp
     from routes.friends import friends_bp
     from routes.notifications import notifications_bp
+    from routes.adminPanel import admin_panel
 
     app.register_blueprint(auth)
     app.register_blueprint(logout_bp)
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(tasks_bp)
     app.register_blueprint(friends_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(admin_panel)
 
     @app.context_processor
     def inject_notifications():

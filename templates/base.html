@@ -115,6 +115,19 @@ body.dark-mode {
 
 </nav>
 
+<!--nu sterge ba denis-->
+<!-- {% if current_user.is_authenticated 
+      and current_user.role == "admin"
+      and not request.endpoint.startswith('admin_panel')
+      and not request.endpoint.startswith('friends') %}
+    <a href="{{ url_for('admin_panel.dashboard') }}" class="btn btn-warning ms-3">
+        Admin Panel
+    </a>
+{% endif %} -->
+
+
+
+
 <div class="container mt-4">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -193,3 +206,20 @@ document.querySelectorAll(".template-btn").forEach(btn => {
     });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const bell = document.querySelector('.btn.btn-outline-light.position-relative');
+
+    if (bell) {
+        bell.addEventListener("click", () => {
+            fetch("/notifications/seen")
+                .then(() => {
+                    const badge = bell.querySelector(".badge");
+                    if (badge) badge.remove();  
+                });
+        });
+    }
+});
+</script>
+</body>
+</html>

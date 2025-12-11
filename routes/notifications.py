@@ -20,3 +20,13 @@ def clear_notifications():
     db.session.commit()
 
     return redirect(url_for("home.index"))
+
+@notifications_bp.route("/seen")
+@login_required
+def mark_seen():
+    Notification.query.filter_by(user_id=current_user.id, seen=False)\
+                      .update({"seen": True})
+
+    db.session.commit()
+
+    return ("", 204)

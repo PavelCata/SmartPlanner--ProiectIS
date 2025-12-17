@@ -10,21 +10,43 @@ friends_bp = Blueprint("friends", __name__, url_prefix="/friends")
 @login_required
 def list_friends():
     friends = Friendship.query.filter(
-        ((Friendship.sender_id == current_user.id) | 
+        ((Friendship.sender_id == current_user.id) |
          (Friendship.receiver_id == current_user.id)),
         Friendship.status == "accepted"
     ).all()
 
-    pending = Friendship.query.filter_by(receiver_id=current_user.id, status="pending").all()
+    received_requests = Friendship.query.filter_by(
+        receiver_id=current_user.id,
+        status="pending"
+    ).all()
 
-    users = User.query.filter(User.id != current_user.id).all()
+    all_users = User.query.filter(User.id != current_user.id).all()
+
+    relations = Friendship.query.filter(
+        (Friendship.sender_id == current_user.id) |
+        (Friendship.receiver_id == current_user.id)
+    ).all()
+
+    relation_status = {}
+
+    for r in relations:
+        other_id = r.receiver_id if r.sender_id == current_user.id else r.sender_id
+
+        if r.status == "accepted":
+            relation_status[other_id] = "accepted"
+        elif r.sender_id == current_user.id:
+            relation_status[other_id] = "pending_sent"
+        else:
+            relation_status[other_id] = "pending_received"
 
     return render_template(
         "friends.html",
         friends=friends,
-        received_requests=pending,  
-        users=users
+        received_requests=received_requests,
+        users=all_users,
+        relation_status=relation_status
     )
+
 
 @friends_bp.route("/add/<int:user_id>")
 @login_required

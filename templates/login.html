@@ -1,19 +1,64 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card p-4">
-      <h3 class="mb-4">Login</h3>
+<div class="min-vh-100 d-flex align-items-center"
+     style="background: radial-gradient(1200px circle at 10% 10%, rgba(25,135,84,.25), transparent 45%),
+            radial-gradient(900px circle at 90% 20%, rgba(13,110,253,.20), transparent 40%),
+            #0b1220;">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
 
-      <form method="POST">
-        <input class="form-control mb-3" name="user_input" placeholder="Email sau Username" required>
-        <input class="form-control mb-3" name="password" type="password" placeholder="Parola" required>
-        <button class="btn btn-success w-100">Autentificare</button>
-      </form>
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="p-4 p-md-5">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold mb-1">Bine ai revenit</h2>
+              <p class="text-muted mb-0">Autentifica-te ca sa-ti vezi planificarile</p>
+            </div>
 
-      <hr>
-      <p class="text-center">Nu ai cont? <a href="/register">Inregistreaza-te</a></p>
+            <form method="POST" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label class="form-label">Email sau Username</label>
+                <div class="input-group">
+                  <span class="input-group-text">👤</span>
+                  <input class="form-control" name="user_input" placeholder="email@example.com" required>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <label class="form-label">Parola</label>
+                <div class="input-group">
+                  <span class="input-group-text">🔒</span>
+                  <input class="form-control" name="password" type="password" placeholder="••••••••" required>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="remember">
+                  <label class="form-check-label" for="remember">Tine-mă minte</label>
+                </div>
+                <a class="small text-decoration-none" href="#">Ai uitat parola?</a>
+              </div>
+
+              <button class="btn btn-success w-100 py-2 fw-semibold rounded-3">
+                Autentificare
+              </button>
+            </form>
+
+            <hr class="my-4">
+
+            <p class="text-center mb-0">
+              Nu ai cont?
+              <a class="fw-semibold text-decoration-none" href="/register">Inregistreaza-te</a>
+            </p>
+          </div>
+        </div>
+
+        <p class="text-center text-white-50 small mt-3 mb-0">
+          SmartPlanner
+        </p>
+      </div>
     </div>
   </div>
 </div>

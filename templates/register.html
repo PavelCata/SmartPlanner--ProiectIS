@@ -1,22 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row justify-content-center">
-  <div class="col-md-5">
-    <div class="card p-4">
-      <h3 class="mb-4">Inregistrare</h3>
+<div class="min-vh-100 d-flex align-items-center"
+     style="background: radial-gradient(1200px circle at 10% 10%, rgba(13,110,253,.25), transparent 45%),
+            radial-gradient(900px circle at 90% 20%, rgba(25,135,84,.20), transparent 40%),
+            #0b1220;">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-7 col-lg-6">
 
-      <form method="POST">
-        <input class="form-control mb-3" name="username" placeholder="Username" required>
-        <input class="form-control mb-3" name="email" type="email" placeholder="Email" required>
-        <input class="form-control mb-3" name="password" type="password" placeholder="Parola" required>
-        <input class="form-control mb-3" name="confirm" type="password" placeholder="Confirma parola" required>
-        <input class="form-control mb-3" name="secret_code" placeholder="Cod admin (optional)">
-        <button class="btn btn-primary w-100">Creeaza cont</button>
-      </form>
+        <div class="card border-0 shadow-lg rounded-4">
+          <div class="p-4 p-md-5">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold mb-1">Creeaza cont</h2>
+              <p class="text-muted mb-0">Alatura-te SmartPlanner</p>
+            </div>
 
-      <hr>
-      <p class="text-center">Ai deja cont? <a href="/login">Login</a></p>
+            <form method="POST">
+              <div class="mb-3">
+                <label class="form-label">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text">👤</span>
+                  <input class="form-control" name="username" placeholder="username" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text">📧</span>
+                  <input class="form-control" name="email" type="email" placeholder="email@example.com" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Parola</label>
+                <div class="input-group">
+                  <span class="input-group-text">🔒</span>
+                  <input class="form-control" name="password" type="password" placeholder="••••••••" required>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Confirma parola</label>
+                <div class="input-group">
+                  <span class="input-group-text">🔁</span>
+                  <input class="form-control" name="confirm" type="password" placeholder="••••••••" required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label">Cod admin <span class="text-muted">(optional)</span></label>
+                <div class="input-group">
+                  <span class="input-group-text">🛡️</span>
+                  <input class="form-control" name="secret_code" placeholder="cod admin">
+                </div>
+              </div>
+
+              <button class="btn btn-primary w-100 py-2 fw-semibold rounded-3">
+                Creeaza cont
+              </button>
+            </form>
+
+            <hr class="my-4">
+
+            <p class="text-center mb-0">
+              Ai deja cont?
+              <a class="fw-semibold text-decoration-none" href="/login">Autentifica-te</a>
+            </p>
+          </div>
+        </div>
+
+        <p class="text-center text-white-50 small mt-3 mb-0">
+          SmartPlanner
+        </p>
+
+      </div>
     </div>
   </div>
 </div>

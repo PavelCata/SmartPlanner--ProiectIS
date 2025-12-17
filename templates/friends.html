@@ -58,26 +58,41 @@
 
 
   <div class="card mb-4">
-    <div class="card-body">
-      <h4 class="mb-3">Adauga prieteni</h4>
+   <div class="card-body">
+    <h4 class="mb-3">Adauga prieteni</h4>
 
-      {% if users and users|length > 0 %}
-        <ul class="list-group">
-          {% for u in users %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ u.username }}
+    {% if users and users|length > 0 %}
+      <ul class="list-group">
+        {% for u in users %}
+          {% set status = relation_status.get(u.id) %}
 
-            <a href="{{ url_for('friends.send_request', user_id=u.id) }}" class="btn btn-primary btn-sm">
-              Trimite cerere
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p class="text-muted">Toti utilizatorii sunt deja prietenii tai.</p>
-      {% endif %}
-    </div>
+          {% if status != "accepted" %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {{ u.username }}
+
+              {% if status == "pending_sent" %}
+                <span class="badge bg-secondary">Cerere trimisa</span>
+
+              {% elif status == "pending_received" %}
+                <span class="badge bg-warning text-dark">Ti-a trimis cerere</span>
+
+              {% else %}
+                <a href="{{ url_for('friends.send_request', user_id=u.id) }}"
+                   class="btn btn-primary btn-sm">
+                  Trimite cerere
+                </a>
+              {% endif %}
+            </li>
+          {% endif %}
+
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">Toti utilizatorii sunt deja prietenii tai.</p>
+    {% endif %}
+   </div>
   </div>
+
 
 </div>
 

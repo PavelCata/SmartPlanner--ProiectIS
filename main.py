@@ -1,3 +1,5 @@
+import pymysql
+pymysql.install_as_MySQLdb()
 from app import create_app, db
 
 app = create_app()

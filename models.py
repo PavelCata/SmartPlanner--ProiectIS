@@ -50,5 +50,3 @@ class Notification(db.Model):
     seen = db.Column(db.Boolean, default=False)
     
 User.notifications = db.relationship("Notification", backref="user", lazy=True, cascade="all,delete")
-
-

@@ -66,17 +66,11 @@ body.dark-mode {
 }
 
 </style>
-
 </head>
-
 <body class="bg-light">
-
 <nav class="navbar navbar-dark bg-dark px-3">
-
   <a class="navbar-brand" href="/">Smart Planner</a>
-
   <div class="ms-auto d-flex align-items-center">
-
     <div class="dropdown me-3">
       <button class="btn btn-outline-light position-relative" data-bs-toggle="dropdown">
         🔔
@@ -86,16 +80,13 @@ body.dark-mode {
         </span>
         {% endif %}
       </button>
-
       <div class="dropdown-menu dropdown-menu-end p-3" style="width: 300px; max-height: 300px; overflow-y: auto;">
       <div class="d-flex justify-content-between align-items-center px-2">
         <h6 class="mb-0">Notificari</h6>
-
         <a href="{{ url_for('notifications.clear_notifications') }}"
           class="btn btn-sm btn-outline-danger py-0 px-2">
           Sterge tot
         </a>
-
       </div>
       <hr class="mt-2 mb-2">
         {% if notifications and notifications|length > 0 %}
@@ -109,10 +100,8 @@ body.dark-mode {
         {% endif %}
       </div>
     </div>
-
     <button id="darkToggle" class="btn btn-outline-light">🌙</button>
   </div>
-
 </nav>
 
 <!--nu sterge ba denis-->
@@ -125,9 +114,6 @@ body.dark-mode {
     </a>
 {% endif %} -->
 
-
-
-
 <div class="container mt-4">
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -138,7 +124,6 @@ body.dark-mode {
       {% endfor %}
     {% endif %}
   {% endwith %}
-
   {% block content %}{% endblock %}
 </div>
 

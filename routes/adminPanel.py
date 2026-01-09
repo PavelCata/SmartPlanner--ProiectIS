@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from models import User
 from app import db
-
+from Proxies.adminProxy import admin_only_proxy, admin_audit_proxy
+#c0ds3cre7d34dm1n
 admin_panel = Blueprint("admin_panel", __name__, url_prefix="/admin")
 
 def is_admin():
@@ -16,12 +17,15 @@ def protect_panel():
 
 @admin_panel.route("/dashboard")
 @login_required
+@admin_only_proxy
 def dashboard():
     users = User.query.filter(User.role != "admin").all()
     return render_template("adminPanel.html", users=users)
 
 @admin_panel.route("/ban/<int:user_id>")
 @login_required
+@admin_only_proxy
+@admin_audit_proxy
 def ban_user(user_id):
     user = User.query.get(user_id)
     if user:

@@ -4,6 +4,7 @@ from datetime import datetime, date, time, timedelta
 from app import db
 from models import Task
 from routes.notifications import add_notification
+from Proxies.adminProxy import restriction_proxy
 
 tasks_bp = Blueprint("tasks", __name__)
 
@@ -120,6 +121,7 @@ def move_task_to_next_day(task, prefer_target_time=None):
 
 @tasks_bp.route("/tasks", methods=["GET", "POST"])
 @login_required
+@restriction_proxy
 def view_tasks():
     date_str = request.values.get("date")
     if date_str:

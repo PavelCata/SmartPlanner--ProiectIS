@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from models import User, Friendship
 from app import db
 from routes.notifications import add_notification
+from Proxies.adminProxy import restriction_proxy
 
 friends_bp = Blueprint("friends", __name__, url_prefix="/friends")
 
@@ -50,6 +51,7 @@ def list_friends():
 
 @friends_bp.route("/add/<int:user_id>")
 @login_required
+@restriction_proxy
 def send_request(user_id):
     if user_id == current_user.id:
         flash("Nu poti sa iti trimiti cerere singur!", "warning")

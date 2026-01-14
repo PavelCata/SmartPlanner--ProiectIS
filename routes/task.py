@@ -4,6 +4,10 @@ from datetime import datetime, date, time, timedelta
 from app import db
 from models import Task
 from routes.notifications import add_notification
+from Proxies.adminProxy import restriction_proxy
+from builder.task_builder import TaskBuilder, TaskDTO
+from services.task_service import save_task
+from datetime import timedelta, datetime
 
 tasks_bp = Blueprint("tasks", __name__)
 
@@ -42,7 +46,7 @@ def find_slot_near_target(existing, duration, target_minutes, exclude_target=Fal
             if start_after + duration <= 22 * 60:
                 return from_minutes(start_after), from_minutes(start_after + duration)
             return None
-        return from_minutes(target_minutes), from_minutes(target_minutes + duration)
+        return from_minutes(target_minutes), from_minutes(target_minutes + duration) 
     proposed_start = target_minutes
     proposed_end = target_minutes + duration
     if not exclude_target:
@@ -126,6 +130,7 @@ def move_task_to_next_day(task, prefer_target_time=None):
 
 @tasks_bp.route("/tasks", methods=["GET", "POST"])
 @login_required
+@restriction_proxy
 def view_tasks():
     date_str = request.values.get("date")
     if date_str:
@@ -249,7 +254,7 @@ def view_tasks():
                         if not (end_time <= t.start_time or start_time >= t.end_time):
                             flash("Nu poti suprascrie un task important sau mediu!", "danger")
                             return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
-        new_task = Task(
+        dto = TaskDTO(
             user_id=current_user.id,
             date=selected_date,
             start_time=start_time,
@@ -258,8 +263,10 @@ def view_tasks():
             importance=importance,
             low_mode=low_mode
         )
-        db.session.add(new_task)
-        db.session.commit()
+
+        new_task = TaskBuilder().from_dto(dto).build()
+        save_task(new_task)
+
         flash("Task creat cu succes.", "success")
         return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
     tasks = (
@@ -268,7 +275,63 @@ def view_tasks():
         .order_by(Task.start_time)
         .all()
     )
-    return render_template("index.html", selected_date=selected_date, tasks=tasks)
+
+
+    total_today = len(tasks)
+    done_today = sum(1 for t in tasks if t.status == "done")
+    missed_today = sum(1 for t in tasks if t.status == "missed")
+    pending_today = sum(1 for t in tasks if t.status == "pending")
+
+    start_week = selected_date - timedelta(days=selected_date.weekday())   
+    end_week = start_week + timedelta(days=6)                            
+
+    week_tasks = Task.query.filter(
+        Task.user_id == current_user.id,
+        Task.date >= start_week,
+        Task.date <= end_week
+    ).all()
+
+    done_week = sum(1 for t in week_tasks if t.status == "done")
+    missed_week = sum(1 for t in week_tasks if t.status == "missed")
+
+    den = (done_week + missed_week)
+    weekly_rate = round((done_week / den) * 100) if den > 0 else 0
+
+    bins = {}
+    for t in week_tasks:
+        if t.status != "done":
+            continue
+        hour = t.start_time.hour
+        bucket_start = (hour // 2) * 2
+        key = f"{bucket_start:02d}:00–{bucket_start+2:02d}:00"
+        bins[key] = bins.get(key, 0) + 1
+
+    best_interval = max(bins, key=bins.get) if bins else "—"
+
+    last30 = Task.query.filter(
+        Task.user_id == current_user.id
+    ).order_by(Task.date.desc(), Task.start_time.desc()).limit(30).all()
+
+    done_last30 = sum(1 for t in last30 if t.status == "done")
+    last30_total = len(last30)
+
+    return render_template(
+        "index.html",
+        selected_date=selected_date,
+        tasks=tasks,
+
+        total_today=total_today,
+        done_today=done_today,
+        missed_today=missed_today,
+        pending_today=pending_today,
+
+        weekly_rate=weekly_rate,
+        best_interval=best_interval,
+
+        done_last30=done_last30,
+        last30_total=last30_total
+    )
+
 
 
 @tasks_bp.route("/tasks/<int:task_id>/delete", methods=["POST", "GET"])
@@ -293,3 +356,24 @@ def delete_task(task_id):
     if redirect_date:
         return redirect(url_for("tasks.view_tasks", date=redirect_date))
     return redirect(url_for("tasks.view_tasks"))
+
+@tasks_bp.route("/tasks/<int:task_id>/status", methods=["POST"])
+@login_required
+def set_task_status(task_id):
+    status = request.form.get("status")  
+    date_str = request.values.get("date")
+
+    if status not in ("done", "missed", "pending"):
+        flash("Status invalid.", "danger")
+        return redirect(url_for("tasks.view_tasks", date=date_str) if date_str else url_for("tasks.view_tasks"))
+
+    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+    if not task:
+        flash("Task inexistent sau nu ai drepturi asupra lui.", "danger")
+        return redirect(url_for("tasks.view_tasks", date=date_str) if date_str else url_for("tasks.view_tasks"))
+
+    task.status = status
+    db.session.commit()
+    flash("Status actualizat.", "success")
+
+    return redirect(url_for("tasks.view_tasks", date=date_str) if date_str else url_for("tasks.view_tasks"))

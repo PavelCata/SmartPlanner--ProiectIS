@@ -7,8 +7,11 @@ from models import Notification
 from app import db
 from sqlalchemy import func
 from routes.notifications import add_notification
+from Proxies.taskProxy import TaskFrequencyProxy
 
 home_bp = Blueprint("home", __name__)
+
+user_proxies = {}
 
 @home_bp.route("/")
 @login_required
@@ -22,19 +25,12 @@ def index():
         if t.start_time > now:
             next_task = t
             break
-    top_tasks = []
-    top_tasks = (
-    db.session.query(
-        Task.title,
-        func.count(Task.id).label("freq"),
-        func.avg((func.hour(Task.end_time) * 60 + func.minute(Task.end_time)) - (func.hour(Task.start_time) * 60 + func.minute(Task.start_time))).label("avg_duration")
-    )
-        .filter(Task.user_id == current_user.id)
-        .group_by(Task.title)
-        .order_by(func.count(Task.id).desc())
-        .limit(3)
-        .all()
-    )
+
+    if current_user.id not in user_proxies:
+        user_proxies[current_user.id] = TaskFrequencyProxy(current_user.id)
+
+    top_tasks = user_proxies[current_user.id].get_top_tasks()
+
     return render_template(
         "index.html",
         tasks_today=tasks_today,

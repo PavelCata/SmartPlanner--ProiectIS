@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin
+from flask_login import LoginManager
 from config import Config
 from flask_login import current_user
 
@@ -18,6 +18,10 @@ def create_app():
     login_manager.init_app(app)
 
     login_manager.login_view = "auth.login"
+
+    # important: încarcă observer-ele după ce db e inițializat
+    with app.app_context():
+        from observers import friendshipObserver  # noqa: F401
 
     from routes.login_register import auth
     from routes.logout import logout_bp
@@ -42,12 +46,11 @@ def create_app():
             notifs = Notification.query.filter_by(user_id=current_user.id, seen=False).all()
         else:
             notifs = []
-
         return {"notifications": notifs}
+
     return app
 
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
-

@@ -48,6 +48,17 @@
             (alege o data)
           {% endif %}
         </h4>
+        <div class="card mb-3">
+          <div class="card-body">
+            <ul class="mb-0">
+              <li>Astazi: {{ total_today }} task-uri – {{ done_today }} terminate, {{ missed_today }} ratate, {{ pending_today }} în așteptare</li>
+              <li>Rata de finalizare saptamana aceasta: {{ weekly_rate }}%</li>
+              <li>Cel mai productiv interval: {{ best_interval }}</li>
+              <li>Ultimele 30 task-uri: ai terminat {{ done_last30 }} din {{ last30_total }}</li>
+            </ul>
+          </div>
+        </div>
+
         {% if tasks and tasks|length > 0 %}
           <div class="table-responsive">
             <table class="table table-sm align-middle">
@@ -60,20 +71,34 @@
               </thead>
               <tbody>
                 {% for t in tasks %}
-                  <tr>
-                    <td>{{ t.start_time.strftime('%H:%M') }} – {{ t.end_time.strftime('%H:%M') }}</td>
-                    <td>{{ t.title }}</td>
-                    <td class="text-end">
-                      <form method="post"
-                            action="{{ url_for('tasks.delete_task', task_id=t.id) }}">
-                        <input type="hidden" name="date" value="{{ selected_date.isoformat() }}">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                          Sterge
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                {% endfor %}
+                <tr>
+                 <td>{{ t.start_time.strftime('%H:%M') }} – {{ t.end_time.strftime('%H:%M') }}</td>
+                 <td>{{ t.title }}</td>
+
+                 <td class="task-actions">
+                   <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
+                      <input type="hidden" name="status" value="done">
+                      <button type="submit" class="btn-done">✅ </button>
+                   </form>
+
+                   <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
+                      <input type="hidden" name="status" value="missed">
+                      <button type="submit" class="btn-missed">❌ </button>
+                   </form>
+                 </td>
+
+                 <td class="text-end">
+                    <form method="post"
+                               action="{{ url_for('tasks.delete_task', task_id=t.id) }}">
+                      <input type="hidden" name="date" value="{{ selected_date.isoformat() }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Șterge
+                      </button>
+                   </form>
+                 </td>
+               </tr>
+               {% endfor %}
+
               </tbody>
             </table>
           </div>

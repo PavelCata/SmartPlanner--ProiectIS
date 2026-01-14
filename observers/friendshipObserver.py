@@ -7,9 +7,7 @@ def after_friendship_update(mapper, connection, target):
     if target.status == "accepted":
         notif = Notification(
             user_id=target.sender_id,
-            message="Cererea ta de prietenie a fost acceptata! 🎉",
-            category="success",
-            seen=False
+            text="Cererea ta de prietenie a fost acceptata! 🎉", 
+            type="success", 
         )
         db.session.add(notif)
-        db.session.commit()

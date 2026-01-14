@@ -84,24 +84,24 @@
     </div>
     <div class="card mb-4">
       <div class="card-body">
-        <h4 class="mb-3">➕ Cum vrei sa adaugi taskul?</h4>
+        <h4 class="mb-3"> Cum vrei sa adaugi taskul?</h4>
         <div class="d-flex gap-3">
           <button type="button"
                   class="btn btn-outline-info w-100"
                   id="btn-rapid">
-            ⚡ Automat
+             Automat
           </button>
           <button type="button"
                   class="btn btn-outline-success w-100"
                   id="btn-normal">
-            📝 Manual
+             Manual
           </button>
         </div>
       </div>
     </div>
     <div class="card mb-4 d-none" id="rapid-form">
       <div class="card-body">
-        <h4 class="mb-3">⏰ Adaugare rapida</h4>
+        <h4 class="mb-3"> Adaugare rapida</h4>
         <p class="text-muted small"></p>
         <form method="post" action="{{ url_for('tasks.view_tasks') }}">
           <input type="hidden" name="date"
@@ -127,7 +127,7 @@
           </div>
           <div class="mt-3 text-end">
             <button type="submit" class="btn btn-info">
-              📌 Adauga
+               Adauga
             </button>
           </div>
         </form>        
@@ -190,7 +190,7 @@
                     data-title="{{ t.title }}"
                     data-duration="{{ t.avg_duration|round(0) }}"
                     data-importance="medium">
-              ⭐ {{ t.title }}
+               {{ t.title }}
             </button>
             {% endfor %}
           </div>

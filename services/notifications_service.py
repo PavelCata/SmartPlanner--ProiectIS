@@ -4,8 +4,8 @@ from models import Notification
 def add_notification(user_id, message, category="info"):
     notif = Notification(
         user_id=user_id,
-        message=message,
-        category=category,
+        text=message,    
+        type=category,      
         seen=False
     )
     db.session.add(notif)

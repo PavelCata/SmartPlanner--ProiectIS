@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
 from models import User, Friendship
 from app import db
-from routes.notifications import add_notification
+from services.notifications_service import add_notification
 from Proxies.adminProxy import restriction_proxy
 
 friends_bp = Blueprint("friends", __name__, url_prefix="/friends")
@@ -78,17 +78,15 @@ def send_request(user_id):
 
 @friends_bp.route("/accept/<int:req_id>")
 @login_required
+@restriction_proxy
 def accept(req_id):
     req = Friendship.query.get(req_id)
     if req and req.receiver_id == current_user.id:
         req.status = "accepted"
         db.session.commit()
         flash("Cerere acceptata!", "success")
-
-    add_notification(req.sender_id, f"{current_user.username} ti-a acceptat cererea de prietenie!","success")
     
     return redirect(url_for("friends.list_friends"))
-
 
 @friends_bp.route("/reject/<int:req_id>")
 @login_required

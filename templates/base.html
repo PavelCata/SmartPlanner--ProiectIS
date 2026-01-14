@@ -65,6 +65,43 @@ body.dark-mode {
     color: #fff;
 }
 
+table td {
+  vertical-align: middle;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.task-actions form {
+  display: contents;
+}
+
+.btn-done, .btn-missed {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.btn-done:hover {
+  background: #c8f7c5;
+  border-color: #4caf50;
+}
+
+.btn-missed:hover {
+  background: #f7c5c5;
+  border-color: #f44336;
+}
+
+
 </style>
 </head>
 <body class="bg-light">

@@ -22,6 +22,7 @@ class Task(db.Model):
     title = db.Column(db.String(255), nullable=False)
     importance = db.Column(db.String(10), nullable=False, default="medium")  
     low_mode = db.Column(db.String(10), nullable=True)
+    status = db.Column(db.String(10), nullable=False, default="pending")
     def to_dict(self):
         return {
             "id": self.id,
@@ -31,6 +32,7 @@ class Task(db.Model):
             "title": self.title,
             "importance": self.importance,
             "low_mode": self.low_mode,
+            "status": self.status,
         }
 
 class Friendship(db.Model):

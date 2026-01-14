@@ -35,6 +35,12 @@ def find_free_slot(existing, duration):
 def find_slot_near_target(existing, duration, target_minutes, exclude_target=False):
     if not existing:
         if exclude_target:
+            start_before = target_minutes - duration
+            if start_before >= 8 * 60:
+                return from_minutes(start_before), from_minutes(start_before + duration)
+            start_after = target_minutes + 1
+            if start_after + duration <= 22 * 60:
+                return from_minutes(start_after), from_minutes(start_after + duration)
             return None
         return from_minutes(target_minutes), from_minutes(target_minutes + duration)
     proposed_start = target_minutes
@@ -158,8 +164,8 @@ def view_tasks():
             ).order_by(Task.start_time).all()
             if importance == "high":
                 for t in existing:
-                    if t.importance in ("medium", "low"):
-                         if not (end_time <= t.start_time or start_time >= t.end_time):
+                    if not (end_time <= t.start_time or start_time >= t.end_time):
+                        if t.importance in ("medium", "low"):
                             move_task_to_next_day(t, prefer_target_time=target_time)
                 existing = Task.query.filter_by(
                     user_id=current_user.id, date=selected_date
@@ -179,7 +185,7 @@ def view_tasks():
                 for t in existing:
                     if not (end_time <= t.start_time or start_time >= t.end_time):
                         if t.importance == "low":
-                            move_task_to_next_day(t)
+                            move_task_to_next_day(t, prefer_target_time=target_time)
                         else:
                             slot = find_slot_near_target(existing, duration, target_time)
                             if slot:
@@ -217,7 +223,11 @@ def view_tasks():
             if importance == "high":
                 for t in existing:
                     if not (end_time <= t.start_time or start_time >= t.end_time):
-                        move_task_to_next_day(t)
+                        if t.importance in ("medium", "low"):
+                            move_task_to_next_day(t)
+                        else:
+                            flash("Nu poti suprascrie un task important!", "danger")
+                            return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
             if importance == "medium":
                 for t in existing:
                     if not (end_time <= t.start_time or start_time >= t.end_time):
@@ -237,7 +247,8 @@ def view_tasks():
                 else: 
                     for t in existing:
                         if not (end_time <= t.start_time or start_time >= t.end_time):
-                            move_task_to_next_day(t)
+                            flash("Nu poti suprascrie un task important sau mediu!", "danger")
+                            return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
         new_task = Task(
             user_id=current_user.id,
             date=selected_date,

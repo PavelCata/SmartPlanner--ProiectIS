@@ -19,9 +19,8 @@ def create_app():
 
     login_manager.login_view = "auth.login"
 
-    # important: încarcă observer-ele după ce db e inițializat
     with app.app_context():
-        from observers import friendshipObserver  # noqa: F401
+        from observers import friendshipObserver
 
     from routes.login_register import auth
     from routes.logout import logout_bp
@@ -42,11 +41,27 @@ def create_app():
     @app.context_processor
     def inject_notifications():
         from models import Notification
+        from services.notifications_service import deliver_queued  # import local
+
         if current_user.is_authenticated:
-            notifs = Notification.query.filter_by(user_id=current_user.id, seen=False).all()
+            deliver_queued(current_user.id)
+
+            notifs = Notification.query.filter(
+                Notification.user_id == current_user.id,
+                Notification.status != "deleted"
+            ).order_by(Notification.created_at.desc()).all()
+
+            unseen_count = Notification.query.filter_by(
+                user_id=current_user.id,
+                status="unseen"
+            ).count()
         else:
             notifs = []
-        return {"notifications": notifs}
+            unseen_count = 0
+
+        return {"notifications": notifs, "unseen_count": unseen_count}
+
+
 
     return app
 

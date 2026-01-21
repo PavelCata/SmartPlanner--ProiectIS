@@ -111,9 +111,9 @@ table td {
     <div class="dropdown me-3">
       <button class="btn btn-outline-light position-relative" data-bs-toggle="dropdown">
         🔔
-        {% if notifications and notifications|length > 0 %}
+        {% if unseen_count and unseen_count > 0 %}
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-          {{ notifications|length }}
+          {{ unseen_count }}
         </span>
         {% endif %}
       </button>
@@ -129,24 +129,42 @@ table td {
         {% if notifications and notifications|length > 0 %}
           {% for n in notifications %}
             {% if n.text.startswith("TASK_INVITE|") %}
-              <div class="alert alert-info p-2 mb-2">
-                Invitație la task
-                <div class="mt-2 d-flex gap-2">
-                  <a class="btn btn-sm btn-success"
-                  href="{{ url_for('friends.schedule_invite_task', notif_id=n.id) }}">
-                  Accept
-                </a>
-                <a class="btn btn-sm btn-danger"
-                  href="{{ url_for('friends.reject_invite_task', notif_id=n.id) }}">
-                  Refuz
-                </a>
+              {% set parts = n.text.split('|') %}
+              {% set data = {} %}
+              {% for p in parts[1:] %}
+                {% if '=' in p %}
+                  {% set kv = p.split('=', 1) %}
+                  {% set _ = data.update({kv[0]: kv[1]}) %}
+                {% endif %}
+              {% endfor %}
+
+              {% set sender_name = data.get('from_name', 'Prietenul tau') %}
+              {% set task_name = data.get('task', 'task') %}
+
+              {# === UI INVITATIE === #}
+              <div class="border rounded p-2 mb-2 bg-light">
+                <div class="fw-semibold mb-2">
+                  {{ sender_name }} vrea sa faceti taskul <b>{{ task_name }}</b> impreuna.
+                </div>
+
+                <div class="d-flex gap-2">
+                  <a href="{{ url_for('friends.schedule_invite_task', notif_id=n.id) }}"
+                    class="btn btn-success btn-sm">
+                    Accepta
+                  </a>
+                  <a href="{{ url_for('friends.reject_invite_task', notif_id=n.id) }}"
+                    class="btn btn-danger btn-sm">
+                    Refuza
+                  </a>
                 </div>
               </div>
+
             {% else %}
-              <div class="alert alert-{{ n.type }} p-2 mb-2">
+              <div class="alert alert-{{ n.type }} mb-2">
                 {{ n.text }}
               </div>
             {% endif %}
+
           {% endfor %}
         {% else %}
           <p class="text-muted text-center mb-0">Nici o notificare</p>
@@ -253,11 +271,12 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("/notifications/seen")
                 .then(() => {
                     const badge = bell.querySelector(".badge");
-                    if (badge) badge.remove();  
+                    if (badge) badge.remove();
                 });
         });
     }
 });
 </script>
+
 </body>
 </html>

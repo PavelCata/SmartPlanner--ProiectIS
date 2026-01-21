@@ -4,9 +4,10 @@ from models import User, Friendship, Notification, Task
 from app import db
 from services.notifications_service import add_notification
 from Proxies.adminProxy import restriction_proxy
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from builder.task_builder import TaskBuilder, TaskDTO
 from services.task_service import save_task
+from services.notifications_service import create_notification
 
 
 
@@ -128,7 +129,7 @@ def _parse_invite(text: str):
             d[k] = v
     if "from" not in d or "task" not in d:
         return None
-    return {"from_id": int(d["from"]), "task": d["task"]}
+    return {"from_id": int(d["from"]),"from_name": d.get("from_name"), "task": d["task"]}
 
 def _has_conflict(user_id, date_obj, start_t, end_t):
     tasks = Task.query.filter_by(user_id=user_id, date=date_obj).all()
@@ -148,10 +149,21 @@ def invite_task(friend_id, task_name):
         flash("Task invalid.", "danger")
         return redirect(url_for("friends.list_friends"))
 
-    payload = f"TASK_INVITE|from={current_user.id}|task={task_name}"
-    add_notification(friend_id, payload, "info")
+    safe_name = (current_user.username or "").replace("|", "").replace("=", "")
+    safe_task = (task_name or "").replace("|", "").replace("=", "")
+    payload = f"TASK_INVITE|from={current_user.id}|from_name={safe_name}|task={safe_task}"
 
-    flash("Invitatia a fost trimis.", "success")
+    create_notification(
+        user_id=friend_id,
+        text=payload,
+        type="info",
+        category="social",
+        source="task_invite",
+        dedupe_key=f"task_invite:{current_user.id}:{friend_id}:{task_name}:{date.today().isoformat()}"
+    )
+
+
+    flash("Invitatia a fost trimisa!", "success")
     return redirect(url_for("friends.list_friends"))
 
 
@@ -231,8 +243,12 @@ def schedule_invite_task(notif_id):
     save_task(t_sender)
 
     n.seen = True
-    n.text = f"TASK_INVITE_ACCEPTED|from={sender_id}|task={task_name}"
+    n.status = "seen"
+    n.seen_at = datetime.utcnow()
+    n.type = "success"
+    n.text = f"Invitatia la task „{task_name}” a fost ACCEPTATA. ({date_obj.isoformat()} {start_str}-{end_str})"
     db.session.commit()
+
 
     add_notification(
         sender_id,
@@ -270,9 +286,18 @@ def reject_invite_task(notif_id):
 
 
     n.seen = True
-    n.text = f"TASK_INVITE_REJECTED|from={sender_id}|task={task_name}"
+    n.status = "seen"
+    n.seen_at = datetime.utcnow()
+    n.type = "warning"
+    n.text = f"Invitatia la task „{task_name}” a fost REFUZATA."
     db.session.commit()
 
-    add_notification(sender_id, f"{current_user.username} a REFUZAT: {task_name}", "warning")
+    create_notification(
+        user_id=sender_id,
+        text=f"{current_user.username} a REFUZAT: {task_name}",
+        type="warning",
+        category="social",
+        source="task_invite"
+    )   
     flash("Ai refuzat invitatia.", "info")
     return redirect(url_for("friends.list_friends"))

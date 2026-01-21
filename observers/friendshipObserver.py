@@ -9,5 +9,8 @@ def after_friendship_update(mapper, connection, target):
             user_id=target.sender_id,
             text="Cererea ta de prietenie a fost acceptata! 🎉", 
             type="success", 
+            category="social",
+            source="friendship",
+            dedupe_key=f"friendship_accepted_{target.id}"
         )
         db.session.add(notif)

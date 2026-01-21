@@ -13,13 +13,38 @@
       {% if friends and friends|length > 0 %}
         <ul class="list-group">
           {% for f in friends %}
-          {% set friend = f.sender if f.sender_id != current_user.id else f.receiver %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ friend.username }}
-            <a href="{{ url_for('friends.remove', friend_id=f.id) }}" class="btn btn-outline-danger btn-sm">
-              Sterge
-            </a>
-          </li>
+
+            {% if f.sender_id != current_user.id %}
+              {% set friend = f.sender %}
+            {% else %}
+              {% set friend = f.receiver %}
+            {% endif %}
+
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span>{{ friend.username }}</span>
+
+              <div class="d-flex align-items-center gap-2">
+                <div class="dropdown">
+                  <button class="btn btn-outline-primary btn-sm dropdown-toggle"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false">
+                    Invita la task
+                  </button>
+
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{{ url_for('friends.invite_task', friend_id=friend.id, task_name='Gym') }}">Gym</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('friends.invite_task', friend_id=friend.id, task_name='Plimbare') }}">Plimbare</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('friends.invite_task', friend_id=friend.id, task_name='Cafea') }}">Cafea</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('friends.invite_task', friend_id=friend.id, task_name='Biblioteca') }}">Biblioteca</a></li>
+                  </ul>
+                </div>
+
+                <a href="{{ url_for('friends.remove', friend_id=f.id) }}" class="btn btn-outline-danger btn-sm">
+                  Sterge
+                </a>
+              </div>
+            </li>
+
           {% endfor %}
         </ul>
       {% else %}
@@ -56,7 +81,6 @@
     </div>
   </div>
 
-
   <div class="card mb-4">
    <div class="card-body">
     <h4 class="mb-3">Adauga prieteni</h4>
@@ -92,7 +116,6 @@
     {% endif %}
    </div>
   </div>
-
 
 </div>
 

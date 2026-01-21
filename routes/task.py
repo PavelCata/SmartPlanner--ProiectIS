@@ -80,6 +80,59 @@ def find_slot_near_target(existing, duration, target_minutes, exclude_target=Fal
     best_slot = min(slots, key=lambda s: abs(s[0] - target_minutes))
     return from_minutes(best_slot[0]), from_minutes(best_slot[1])
 
+def interval_distance(start_min, end_min, target_min):
+    if start_min <= target_min <= end_min:
+        return 0
+    return min(abs(start_min - target_min), abs(end_min - target_min))
+
+def slot_distance(slot, target_minutes):
+    if not slot:
+        return 10**9
+    return abs(to_minutes(slot[0]) - target_minutes)
+
+def find_task_near_target(existing, target_minutes, allowed_importances):
+    candidates = [t for t in existing if t.importance in allowed_importances]
+    if not candidates:
+        return None
+    return min(
+        candidates,
+        key=lambda t: interval_distance(
+            to_minutes(t.start_time),
+            to_minutes(t.end_time),
+            target_minutes
+        )
+    )
+
+def place_in_victim_interval(victim, duration, target_minutes):
+    vs = to_minutes(victim.start_time)
+    ve = to_minutes(victim.end_time)
+    if ve - vs < duration:
+        return None
+    start_m = max(vs, min(target_minutes, ve - duration))
+    return from_minutes(start_m), from_minutes(start_m + duration)
+
+
+def pick_best_auto2pm_placement(existing, duration, target_minutes, allowed_importances):
+    slot = find_slot_near_target(existing, duration, target_minutes)
+    slot_d = slot_distance(slot, target_minutes)
+
+    victim = find_task_near_target(existing, target_minutes, allowed_importances)
+    if victim:
+        victim_d = interval_distance(
+            to_minutes(victim.start_time),
+            to_minutes(victim.end_time),
+            target_minutes
+        )
+        desired = place_in_victim_interval(victim, duration, target_minutes)
+        if desired and victim_d < slot_d:
+            return ("victim", victim, desired)
+
+    if slot:
+        return ("slot", slot)
+
+    return (None, None)
+
+
 def move_task_to_next_day(task, prefer_target_time=None):
     original_date = task.date
     original_start = task.start_time.strftime("%H:%M")
@@ -172,41 +225,44 @@ def view_tasks():
                     if not (end_time <= t.start_time or start_time >= t.end_time):
                         if t.importance in ("medium", "low"):
                             move_task_to_next_day(t, prefer_target_time=target_time)
-                existing = Task.query.filter_by(
-                    user_id=current_user.id, date=selected_date
-                ).order_by(Task.start_time).all()
-                slot = find_slot_near_target(existing, duration, target_time)
-                if slot:
-                    start_time, end_time = slot
-                    flash(
-                        f"Task adaugat la {start_time.strftime('%H:%M')}-"
-                        f"{end_time.strftime('%H:%M')} (cat mai aproape de 14:00).",
-                        "info"
-                    )
-                else:
-                    flash("Nu exista timp liber pentru acest task important.", "danger")
-                    return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
+                    existing = Task.query.filter_by(user_id=current_user.id, date=selected_date).order_by(Task.start_time).all()
+                    kind = pick_best_auto2pm_placement(existing, duration, target_time, allowed_importances=("medium", "low"))
+                    if kind[0] == "victim":
+                        _, victim, (start_time, end_time) = kind
+                        victim_start_minutes = to_minutes(victim.start_time)
+                        move_task_to_next_day(victim, prefer_target_time=victim_start_minutes)
+                        flash(f"Am mutat '{victim.title}' si am pus taskul important mai aproape de 14:00.", "info")
+                    elif kind[0] == "slot":
+                        _, (start_time, end_time) = kind
+                        flash(f"Task adaugat la {start_time.strftime('%H:%M')}-{end_time.strftime('%H:%M')} (cat mai aproape de 14:00).", "info")
+                    else:
+                        flash("Nu exista timp liber pentru acest task important.", "danger")
+                        return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
             elif importance == "medium":
                 for t in existing:
                     if not (end_time <= t.start_time or start_time >= t.end_time):
                         if t.importance == "low":
                             move_task_to_next_day(t, prefer_target_time=target_time)
-                        else:
-                            slot = find_slot_near_target(existing, duration, target_time)
-                            if slot:
-                                start_time, end_time = slot
-                                flash(f"Task adaugat la {start_time.strftime('%H:%M')}-{end_time.strftime('%H:%M')} (cel mai aproape de 14:00, nu s-au putut muta taskurile existente).", "info")
-                            else:
-                                flash("Nu exista timp liber si nu pot muta taskurile de importanta mare/medie.", "warning")
-                                return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
-                            break
+                    existing = Task.query.filter_by(user_id=current_user.id, date=selected_date).order_by(Task.start_time).all()
+                    kind = pick_best_auto2pm_placement(existing, duration, target_time, allowed_importances=("low",))
+                    if kind[0] == "victim":
+                        _, victim, (start_time, end_time) = kind
+                        victim_start_minutes = to_minutes(victim.start_time)
+                        move_task_to_next_day(victim, prefer_target_time=victim_start_minutes)
+                        flash(f"Am mutat '{victim.title}' si am pus taskul (mediu) mai aproape de 14:00.", "info")
+                    elif kind[0] == "slot":
+                        _, (start_time, end_time) = kind
+                        flash(f"Task adaugat la {start_time.strftime('%H:%M')}-{end_time.strftime('%H:%M')} (cel mai aproape de 14:00).", "info")
+                    else:
+                        flash("Nu exista timp liber", "warning")
+                        return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
             elif importance == "low":
                 slot = find_slot_near_target(existing, duration, target_time)
                 if slot:
                     start_time, end_time = slot
                     flash(f"Task adaugat la {start_time.strftime('%H:%M')}-{end_time.strftime('%H:%M')} (cel mai aproape de 14:00).", "info")
                 else:
-                    flash("Nu exista timp liber pentru un task de importanta mica.", "warning")
+                    flash("Nu exista timp liber", "warning")
                     return redirect(url_for("tasks.view_tasks", date=selected_date.isoformat()))
         else:
             if not (start_str and end_str):

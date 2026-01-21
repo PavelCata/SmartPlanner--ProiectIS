@@ -118,7 +118,6 @@ def remove(friend_id):
 ALLOWED_SHARED_TASKS = {"Gym", "Plimbare", "Cafea", "Biblioteca"}
 
 def _parse_invite(text: str):
-    # TASK_INVITE|from=ID|task=NAME
     if not text or not text.startswith("TASK_INVITE|"):
         return None
     parts = text.split("|")[1:]
@@ -134,7 +133,6 @@ def _parse_invite(text: str):
 def _has_conflict(user_id, date_obj, start_t, end_t):
     tasks = Task.query.filter_by(user_id=user_id, date=date_obj).all()
     for t in tasks:
-        # overlap if NOT (end <= existing_start OR start >= existing_end)
         if not (end_t <= t.start_time or start_t >= t.end_time):
             return True
     return False
@@ -153,7 +151,7 @@ def invite_task(friend_id, task_name):
     payload = f"TASK_INVITE|from={current_user.id}|task={task_name}"
     add_notification(friend_id, payload, "info")
 
-    flash("Invitația a fost trimisă.", "success")
+    flash("Invitatia a fost trimis.", "success")
     return redirect(url_for("friends.list_friends"))
 
 
@@ -164,12 +162,12 @@ def schedule_invite_task(notif_id):
     n = Notification.query.get_or_404(notif_id)
 
     if n.user_id != current_user.id:
-        flash("Nu ai acces la invitația asta.", "danger")
+        flash("Nu ai acces la invitatia asta.", "danger")
         return redirect(url_for("friends.list_friends"))
 
     data = _parse_invite(n.text)
     if not data:
-        flash("Invitație invalidă.", "danger")
+        flash("Invitatie invalida.", "danger")
         return redirect(url_for("friends.list_friends"))
 
     sender_id = data["from_id"]
@@ -177,13 +175,13 @@ def schedule_invite_task(notif_id):
 
     sender_user = User.query.get(sender_id)
     if not sender_user:
-        flash("Prietenul nu mai există.", "danger")
+        flash("Prietenul nu mai exista.", "danger")
         return redirect(url_for("friends.list_friends"))
 
     if request.method == "GET":
         return render_template("invite_schedule.html", notif=n, task_name=task_name)
 
-    day = request.form.get("day")  # today / tomorrow
+    day = request.form.get("day")  
     start_str = request.form.get("start")
     end_str = request.form.get("end")
 
@@ -199,20 +197,20 @@ def schedule_invite_task(notif_id):
         return redirect(url_for("friends.schedule_invite_task", notif_id=notif_id))
 
     if start_t >= end_t:
-        flash("Ora de start trebuie să fie mai mică decât ora de final.", "danger")
+        flash("Ora de start trebuie sa fie mai mica decat ora de final.", "danger")
         return redirect(url_for("friends.schedule_invite_task", notif_id=notif_id))
 
     if _has_conflict(current_user.id, date_obj, start_t, end_t) or _has_conflict(sender_id, date_obj, start_t, end_t):
-        flash("Conflict în program (la tine sau la prieten). Alege alt interval.", "warning")
+        flash("Conflict in program (la tine sau la prieten). Alege alt interval.", "warning")
         return redirect(url_for("friends.schedule_invite_task", notif_id=notif_id))
 
-    # creează task la amândoi (FORȚAT titlu după build)
+    # creeaza task la amandoi 
     t_receiver = TaskBuilder().from_dto(TaskDTO(
         user_id=current_user.id,
         date=date_obj,
         start_time=start_t,
         end_time=end_t,
-        title=task_name,  # nu contează, suprascriem jos
+        title=task_name,  
         importance="medium",
         low_mode=None
     )).build()
@@ -223,7 +221,7 @@ def schedule_invite_task(notif_id):
         date=date_obj,
         start_time=start_t,
         end_time=end_t,
-        title=task_name,  # nu contează, suprascriem jos
+        title=task_name, 
         importance="medium",
         low_mode=None
     )).build()
@@ -242,7 +240,7 @@ def schedule_invite_task(notif_id):
         "success"
     )
 
-    flash("Task creat la amândoi ✅", "success")
+    flash("Task creat la amandoi ", "success")
     return redirect(url_for("tasks.view_tasks", date=date_obj.isoformat()))
 
 
@@ -254,12 +252,12 @@ def reject_invite_task(notif_id):
     n = Notification.query.get_or_404(notif_id)
 
     if n.user_id != current_user.id:
-        flash("Nu ai acces la invitația asta.", "danger")
+        flash("Nu ai acces la invitatia asta.", "danger")
         return redirect(url_for("friends.list_friends"))
 
     data = _parse_invite(n.text)
     if not data:
-        flash("Invitație invalidă.", "danger")
+        flash("Invitatie invalida.", "danger")
         return redirect(url_for("friends.list_friends"))
 
     sender_id = data["from_id"]
@@ -267,7 +265,7 @@ def reject_invite_task(notif_id):
 
     sender_user = User.query.get(sender_id)
     if not sender_user:
-        flash("Prietenul nu mai există.", "danger")
+        flash("Prietenul nu mai exista.", "danger")
         return redirect(url_for("friends.list_friends"))
 
 
@@ -276,5 +274,5 @@ def reject_invite_task(notif_id):
     db.session.commit()
 
     add_notification(sender_id, f"{current_user.username} a REFUZAT: {task_name}", "warning")
-    flash("Ai refuzat invitația.", "info")
+    flash("Ai refuzat invitatia.", "info")
     return redirect(url_for("friends.list_friends"))

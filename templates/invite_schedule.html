@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Programează invitația{% endblock %}
+{% block title %}Programeaza invitatia{% endblock %}
 {% block content %}
 
 <div class="card">
   <div class="card-body">
-    <h4 class="mb-3">Programează: {{ task_name }}</h4>
+    <h4 class="mb-3">Programeaza: {{ task_name }}</h4>
 
     <form method="post">
       <div class="mb-3">
         <label class="form-label">Zi</label>
         <select name="day" class="form-control" required>
           <option value="today">Azi</option>
-          <option value="tomorrow">Mâine</option>
+          <option value="tomorrow">Maine</option>
         </select>
       </div>
 
@@ -27,8 +27,8 @@
       </div>
 
       <div class="mt-3 d-flex gap-2">
-        <button class="btn btn-success" type="submit">Creează task-ul</button>
-        <a class="btn btn-outline-secondary" href="{{ url_for('friends.list_friends') }}">Înapoi</a>
+        <button class="btn btn-success" type="submit">Creeaza task-ul</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('friends.list_friends') }}">Inapoi</a>
       </div>
     </form>
   </div>

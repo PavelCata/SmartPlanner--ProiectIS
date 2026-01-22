@@ -48,14 +48,49 @@
             (alege o data)
           {% endif %}
         </h4>
-        <div class="card mb-3">
+        <div class="card mb-3 stats-card">
           <div class="card-body">
-            <ul class="mb-0">
-              <li>Astazi: {{ total_today }} task-uri – {{ done_today }} terminate, {{ missed_today }} ratate, {{ pending_today }} in asteptare</li>
-              <li>Rata de finalizare saptamana aceasta: {{ weekly_rate }}%</li>
-              <li>Cel mai productiv interval: {{ best_interval }}</li>
-              <li>Ultimele task-uri: ai terminat {{ done_last30 }} din {{ last30_total }}</li>
-            </ul>
+            <div class="row g-3 text-center">
+              <div class="col-md-6 col-lg-3">
+                <div class="stat-box">
+                  <div class="stat-icon">📅</div>
+                  <div class="stat-title">Astazi</div>
+                  <div class="stat-value">
+                    {{ done_today }} / {{ total_today }}
+                  </div>
+                  <div class="stat-sub">
+                    {{ missed_today }} ratate, {{ pending_today }} in asteptare
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-lg-3">
+                <div class="stat-box">
+                  <div class="stat-icon">📈</div>
+                  <div class="stat-title">Saptamana</div>
+                  <div class="stat-value">{{ weekly_rate }}%</div>
+                  <div class="stat-sub">rata de finalizare</div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-lg-3">
+                <div class="stat-box">
+                  <div class="stat-icon">⏰</div>
+                  <div class="stat-title">Interval top</div>
+                  <div class="stat-value">{{ best_interval }}</div>
+                  <div class="stat-sub">cel mai productiv</div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-lg-3">
+                <div class="stat-box">
+                  <div class="stat-icon">🔥</div>
+                  <div class="stat-title">Ultimele task-uri</div>
+                  <div class="stat-value">{{ done_last30 }} / {{ last30_total }}</div>
+                  <div class="stat-sub">finalizate</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -66,25 +101,28 @@
                 <tr>
                   <th style="width: 20%;">Interval</th>
                   <th>Titlu</th>
-                  <th style="width: 10%;"></th>
+                  <th style="width: 10%;" class="text-center">Status</th>
+                  <th style="width: 10%;" class="text-end"></th>
                 </tr>
               </thead>
               <tbody>
                 {% for t in tasks %}
-                <tr>
+                <tr class="{% if t.status == 'done' %}task-done{% elif t.status == 'missed' %}task-missed{% endif %}">
                  <td>{{ t.start_time.strftime('%H:%M') }} – {{ t.end_time.strftime('%H:%M') }}</td>
                  <td>{{ t.title }}</td>
 
-                 <td class="task-actions">
-                   <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
-                      <input type="hidden" name="status" value="done">
-                      <button type="submit" class="btn-done">✅ </button>
-                   </form>
+                 <td class="task-actions-cell">
+                      <div class="task-actions">
+                        <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
+                          <input type="hidden" name="status" value="done">
+                          <button type="submit" class="btn-done  mark-done">✅</button>
+                        </form>
 
-                   <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
-                      <input type="hidden" name="status" value="missed">
-                      <button type="submit" class="btn-missed">❌ </button>
-                   </form>
+                        <form method="POST" action="{{ url_for('tasks.set_task_status', task_id=t.id, date=selected_date.isoformat()) }}">
+                          <input type="hidden" name="status" value="missed">
+                          <button type="submit" class="btn-missed  mark-missed">❌</button>
+                        </form>
+                      </div>
                  </td>
 
                  <td class="text-end">
@@ -366,5 +404,37 @@ btnNormal.addEventListener("click", () => {
     btnRapid.classList.remove("btn-info");
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  function markRow(btn, clsToAdd, clsToRemove) {
+    const row = btn.closest("tr");
+    if (!row) return;
+
+    row.classList.remove(clsToRemove);
+    row.classList.add(clsToAdd);
+
+    setTimeout(() => {
+      btn.closest("form").submit();
+    }, 150);
+  }
+
+  document.querySelectorAll(".mark-done").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      markRow(btn, "task-done", "task-missed");
+    });
+  });
+
+  document.querySelectorAll(".mark-missed").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      markRow(btn, "task-missed", "task-done");
+    });
+  });
+});
+</script>
+
+
 
 {% endblock %}

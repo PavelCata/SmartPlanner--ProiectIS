@@ -69,36 +69,153 @@ table td {
   vertical-align: middle;
 }
 
+.task-actions-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
 .task-actions {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
 }
 
 .task-actions form {
-  display: contents;
+  display: inline-flex;
+  margin: 0;
 }
 
 .btn-done, .btn-missed {
   width: 26px;
   height: 26px;
   padding: 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background: #f8f8f8;
-  cursor: pointer;
+  display: grid;
+  place-items: center;
   line-height: 1;
+  font-size: 16px; 
 }
 
-.btn-done:hover {
-  background: #c8f7c5;
+.btn-done {
+  background: #e6f7e6;
   border-color: #4caf50;
 }
 
-.btn-missed:hover {
-  background: #f7c5c5;
+.btn-missed {
+  background: #fdeaea;
   border-color: #f44336;
+}
+
+.dark-mode .btn-done {
+  background: #1f3d1f;
+  border-color: #4caf50;
+  color: #a5f3a5;
+}
+
+.dark-mode .btn-missed {
+  background: #3d1f1f;
+  border-color: #f44336;
+  color: #f5a5a5;
+}
+
+.task-done {
+  background-color: #e6f7e6;
+}
+
+.dark-mode .task-done {
+  background-color: #1f3d1f;
+}
+
+.task-missed {
+  background-color: #fdeaea;
+}
+
+.dark-mode .task-missed {
+  background-color: #3d1f1f;
+}
+
+
+.dark-mode table {
+  color: #e0e0e0;
+}
+
+.dark-mode .table {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+}
+
+.dark-mode .table th,
+.dark-mode .table td {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  border-color: #333;
+}
+
+.dark-mode .table thead th {
+  background-color: #2a2a2a;
+  color: #ffffff;
+}
+
+tr.task-done > td {
+  background-color: #a8f3a8 !important;
+}
+
+tr.task-missed > td {
+  background-color: #f1b3b3 !important;
+}
+
+body.dark-mode tr.task-done > td {
+  background-color: #1f3d1f !important;
+}
+
+body.dark-mode tr.task-missed > td {
+  background-color: #3d1f1f !important;
+}
+
+.stats-card {
+  border: 1px solid #e0e0e0;
+}
+
+.stat-box {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8f9fa;
+  height: 100%;
+}
+
+.dark-mode .stat-box {
+  background: #2a2a2a;
+}
+
+.stat-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.stat-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: #6c757d;
+}
+
+.dark-mode .stat-title {
+  color: #aaa;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.dark-mode .stat-sub {
+  color: #aaa;
 }
 
 

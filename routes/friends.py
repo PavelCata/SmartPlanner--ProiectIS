@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
+from builder.friendship_builder import FriendshipBuilder
 from models import User, Friendship, Notification, Task
 from app import db
 from services.notifications_service import add_notification
@@ -8,6 +9,7 @@ from datetime import date, datetime, timedelta
 from builder.task_builder import TaskBuilder, TaskDTO
 from services.task_service import save_task
 from services.notifications_service import create_notification
+from builder.friendship_builder import FriendshipBuilder, FriendshipDTO
 
 
 
@@ -72,7 +74,13 @@ def send_request(user_id):
         flash("Cerere deja trimisa!", "info")
         return redirect(url_for("friends.list_friends"))
 
-    req = Friendship(sender_id=current_user.id, receiver_id=user_id)
+    
+    req = FriendshipBuilder().from_dto(FriendshipDTO(
+        sender_id=current_user.id,
+        receiver_id=user_id,
+        status="pending"
+    )).build()
+
     db.session.add(req)
     db.session.commit()
 

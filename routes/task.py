@@ -348,6 +348,7 @@ def view_tasks():
     ).all()
 
     done_week = sum(1 for t in week_tasks if t.status == "done")
+    week_total = len(week_tasks)
     missed_week = sum(1 for t in week_tasks if t.status == "missed")
 
     den = (done_week + missed_week)
@@ -372,21 +373,22 @@ def view_tasks():
     last30_total = len(last30)
 
     return render_template(
-        "index.html",
-        selected_date=selected_date,
-        tasks=tasks,
+    "index.html",
+    selected_date=selected_date,
+    tasks=tasks,
 
-        total_today=total_today,
-        done_today=done_today,
-        missed_today=missed_today,
-        pending_today=pending_today,
+    total_today=total_today,
+    done_today=done_today,
+    missed_today=missed_today,
+    pending_today=pending_today,
 
-        weekly_rate=weekly_rate,
-        best_interval=best_interval,
+    weekly_rate=weekly_rate,
+    best_interval=best_interval,
 
-        done_last30=done_last30,
-        last30_total=last30_total
-    )
+    done_week=done_week,
+    week_total=week_total
+)
+
 
 
 

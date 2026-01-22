@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from flask_login import login_user, current_user
 from app import db, bcrypt
+from builder.user_builder import UserBuilder, UserDTO
 from models import User
 
 auth = Blueprint("auth", __name__)
@@ -40,7 +41,13 @@ def register():
             role = "user"
 
         hashed = bcrypt.generate_password_hash(password).decode("utf-8")
-        user = User(username=username, email=email, password_hash=hashed, role=role)
+        user = UserBuilder().from_dto(UserDTO(
+            username=username,
+            email=email,
+            password_hash=hashed,
+            role=role,
+            restricted=False
+        )).build()
 
         db.session.add(user)
         db.session.commit()

@@ -1,6 +1,8 @@
 from datetime import datetime, date, time
 from app import db
 from models import Notification, NotificationPreference
+from builder.notification_builder import NotificationBuilder, NotificationDTO
+
 
 CATEGORY_TO_FIELD = {
     "social": "allow_social",
@@ -70,23 +72,27 @@ def create_notification(
 
     now = datetime.utcnow()
     status = "queued" if _quiet_now(pref) else "unseen"
+    delivered_at = None if status == "queued" else now
 
-    n = Notification(
+    dto = NotificationDTO(
         user_id=user_id,
         text=text,
         type=type,
-        seen=False,
-        status=status,
         category=category,
         source=source,
         priority=priority,
         dedupe_key=dedupe_key,
+        status=status,
+        seen=False,
         created_at=now,
-        delivered_at=None if status == "queued" else now,
+        delivered_at=delivered_at,
     )
+
+    n = NotificationBuilder().from_dto(dto).build()
     db.session.add(n)
     db.session.commit()
     return n
+
 
 def add_notification(user_id, message, category="info"):
     return create_notification(

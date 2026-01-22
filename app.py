@@ -41,7 +41,7 @@ def create_app():
     @app.context_processor
     def inject_notifications():
         from models import Notification
-        from services.notifications_service import deliver_queued  # import local
+        from services.notifications_service import deliver_queued
 
         if current_user.is_authenticated:
             deliver_queued(current_user.id)

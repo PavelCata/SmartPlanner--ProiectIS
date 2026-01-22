@@ -218,8 +218,38 @@ body.dark-mode tr.task-missed > td {
   color: #aaa;
 }
 
+.dark-mode .list-group-item {
+  background-color: #1f1f1f !important;
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
 
+.dark-mode .list-group {
+  border-color: #333 !important;
+}
+
+.dark-mode .dropdown-item {
+  color: #e0e0e0;
+}
+
+.dark-mode .dropdown-item:hover,
+.dark-mode .dropdown-item:focus {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+.dark-mode .dropdown-divider {
+  border-color: #333;
+}
+
+.dark-mode .badge.bg-warning.text-dark {
+  color: #111 !important;
+}
+.dark-mode .text-muted {
+  color: #bdbdbd !important;
+}
 </style>
+
 </head>
 <body class="bg-light">
 {% if request.endpoint not in ["auth.login", "auth.register", "login", "register"] %}
@@ -259,7 +289,6 @@ body.dark-mode tr.task-missed > td {
               {% set sender_name = data.get('from_name', 'Prietenul tau') %}
               {% set task_name = data.get('task', 'task') %}
 
-              {# === UI INVITATIE === #}
               <div class="border rounded p-2 mb-2 bg-light">
                 <div class="fw-semibold mb-2">
                   {{ sender_name }} vrea sa faceti taskul <b>{{ task_name }}</b> impreuna.
